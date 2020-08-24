@@ -1,0 +1,30 @@
+{
+  "name": "pizza",
+  "version": "1.0.0",
+  "description": "example API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "nodemon --exec babel-node index.js"
+  },
+  "author": "KEVIN",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "graphql-import": "^1.0.2",
+    "graphql-tools": "^6.0.14",
+    "nodemon": "^2.0.4",
+    "pg-promise": "^10.5.8"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "graphql": "^15.3.0",
+    "graphql-server-express": "^1.4.1"
+  }
+}

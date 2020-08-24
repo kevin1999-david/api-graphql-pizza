@@ -1,0 +1,39 @@
+#Scalars: Int, Floatm String,Boolean, ID
+#Querys
+type Query {
+  pizzas(id: Int): [Pizza]
+  ingredients(id: Int): [Ingredient]
+}
+
+#This is my types:
+type Pizza {
+  id: Int! #! indica que es un campo obligatorio
+  name: String!
+  origin: String
+  ingredients: [Ingredient] #Arreglo de tipo ingredientes
+}
+
+type Ingredient {
+  id: Int!
+  name: String!
+  calories: String
+}
+
+type Mutation {
+  createPizza(pizza: PizzaInput): [Pizza]
+  updatePizza(idLast: Int, pizzaU: PizzaInput): Pizza
+  deletePizza(id: Int): [Pizza]
+}
+
+input PizzaInput {
+  name: String!
+  origin: String
+  ingredientIds: [Int]
+}
+
+input PizzaInputUpdated {
+  idLast: Int!
+  name: String
+  origin: String
+  ingredientIds: [Int]
+}
