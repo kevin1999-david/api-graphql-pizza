@@ -15,7 +15,7 @@ const pizzaResolver = {
     ingredients(root, args) {
       const isObjectEmpty = Object.entries(args).length == 0;
       if (isObjectEmpty) {
-        return db.any("SELECT * FROM ingredient");
+        return db.any("SELECT * FROM ingredient ORDER BY id DESC");
       } else {
         return db.any("SELECT * FROM ingredient WHERE id=$1", [args.id]);
       }
@@ -76,6 +76,24 @@ const pizzaResolver = {
       await db.none(query, id);
       let result = await db.any(query3);
       return result;
+    },
+    async createIngredient(root, { ingredient }) {
+      const query = `INSERT INTO ingredient (name , calories ) VALUES($1, $2);`;
+      await db.none(query, [ingredient.name, ingredient.calories]);
+      return await db.any("SELECT * FROM ingredient ORDER BY id DESC");
+    },
+    async updateIngredient(root, args) {
+      const ingredient = args.ingredientU;
+      const query = `UPDATE ingredient SET name=$1, calories=$2 WHERE id=$3;`;
+      await db.none(query, [ingredient.name, ingredient.calories, args.idLast]);
+      return await db.any("SELECT * FROM ingredient ORDER BY id DESC");
+    },
+    async deleteIngredient(root, { id }) {
+      const query = `DELETE FROM ingredient WHERE id = $1`;
+      const query2 = `DELETE FROM pizza_ingredients WHERE ingredient_id = $1;`
+      await db.none(query2, id);
+      await db.none(query, id);
+      return await db.any("SELECT * FROM ingredient ORDER BY id DESC");
     }
   },
 };

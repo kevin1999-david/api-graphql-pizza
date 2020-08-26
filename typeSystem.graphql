@@ -23,6 +23,10 @@ type Mutation {
   createPizza(pizza: PizzaInput): [Pizza]
   updatePizza(idLast: Int, pizzaU: PizzaInput): Pizza
   deletePizza(id: Int): [Pizza]
+
+  createIngredient(ingredient: IngredientInput):[Ingredient]
+  updateIngredient(idLast: Int, ingredientU: IngredientInput): [Ingredient]
+  deleteIngredient(id: Int): [Ingredient]
 }
 
 input PizzaInput {
@@ -30,6 +34,13 @@ input PizzaInput {
   origin: String
   ingredientIds: [Int]
 }
+
+input IngredientInput{
+  name: String!
+  calories: String
+}
+
+
 
 input PizzaInputUpdated {
   idLast: Int!
