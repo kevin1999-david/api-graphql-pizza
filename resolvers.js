@@ -4,20 +4,20 @@ const { db } = require("./connection");
 //Structure of dates
 const pizzaResolver = {
   Query: {
-    pizzas(root, args) {
+    async pizzas(root, args) {
       const isObjectEmpty = Object.entries(args).length == 0;
       if (isObjectEmpty) {
-        return db.any("SELECT * FROM pizza ORDER BY id DESC");
+        return await db.any("SELECT * FROM pizza ORDER BY id DESC");
       } else {
-        return db.any("SELECT * FROM pizza WHERE id=$1", [args.id]);
+        return await db.any("SELECT * FROM pizza WHERE id=$1", [args.id]);
       }
     },
-    ingredients(root, args) {
+    async ingredients(root, args) {
       const isObjectEmpty = Object.entries(args).length == 0;
       if (isObjectEmpty) {
-        return db.any("SELECT * FROM ingredient ORDER BY id DESC");
+        return await db.any("SELECT * FROM ingredient ORDER BY id DESC");
       } else {
-        return db.any("SELECT * FROM ingredient WHERE id=$1", [args.id]);
+        return await db.any("SELECT * FROM ingredient WHERE id=$1", [args.id]);
       }
     },
   },
@@ -55,8 +55,10 @@ const pizzaResolver = {
     },
     async updatePizza(root, args) {
       const query = `UPDATE pizza SET name=$1, origin=$2 where id=$3 returning *;`;
+      const query2 = `DELETE FROM pizza_ingredients WHERE pizza_id = $1`;
       const pizza = args.pizzaU;
       console.log(pizza.ingredientIds);
+      await db.none(query2,args.idLast);
       let result = await db.one(query, [pizza.name, pizza.origin, args.idLast]);
       if (pizza.ingredientIds && pizza.ingredientIds.length > 0) {
         const query = `INSERT INTO pizza_ingredients(pizza_id, ingredient_id) VALUES ($1, $2) 
@@ -65,7 +67,8 @@ const pizzaResolver = {
           await db.one(query, [result.id, ingredientID]);
         }
       }
-      return result;
+     
+      return await db.any("SELECT * FROM pizza ORDER BY id DESC");;
     },
 
     async deletePizza(root, { id }) {

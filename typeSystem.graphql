@@ -21,7 +21,7 @@ type Ingredient {
 
 type Mutation {
   createPizza(pizza: PizzaInput): [Pizza]
-  updatePizza(idLast: Int, pizzaU: PizzaInput): Pizza
+  updatePizza(idLast: Int, pizzaU: PizzaInput): [Pizza]
   deletePizza(id: Int): [Pizza]
 
   createIngredient(ingredient: IngredientInput):[Ingredient]
