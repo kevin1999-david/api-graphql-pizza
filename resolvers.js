@@ -20,6 +20,12 @@ const pizzaResolver = {
         return await db.any("SELECT * FROM ingredient WHERE id=$1", [args.id]);
       }
     },
+    async pizzaIngredients(root, { id }) {
+      const query = `SELECT i.id , i.name, i.calories FROM 
+      pizza_ingredients pi inner join ingredient i
+      on pi.ingredient_id = i.id where pi.pizza_id = $1 order by i.id ;`;
+      return await db.any(query, id);
+    }
   },
   Pizza: {
     ingredients(pizza) {
@@ -55,20 +61,18 @@ const pizzaResolver = {
     },
     async updatePizza(root, args) {
       const query = `UPDATE pizza SET name=$1, origin=$2 where id=$3 returning *;`;
-      const query2 = `DELETE FROM pizza_ingredients WHERE pizza_id = $1`;
       const pizza = args.pizzaU;
-      console.log(pizza.ingredientIds);
-      await db.none(query2,args.idLast);
+
       let result = await db.one(query, [pizza.name, pizza.origin, args.idLast]);
-      if (pizza.ingredientIds && pizza.ingredientIds.length > 0) {
-        const query = `INSERT INTO pizza_ingredients(pizza_id, ingredient_id) VALUES ($1, $2) 
-          returning *`;
-        for (const ingredientID of pizza.ingredientIds) {
-          await db.one(query, [result.id, ingredientID]);
-        }
-      }
-     
-      return await db.any("SELECT * FROM pizza ORDER BY id DESC");;
+      // if (pizza.ingredientIds && pizza.ingredientIds.length > 0) {
+      //   const query = `INSERT INTO pizza_ingredients(pizza_id, ingredient_id) VALUES ($1, $2) 
+      //     returning *`;
+      //   for (const ingredientID of pizza.ingredientIds) {
+      //     await db.one(query, [result.id, ingredientID]);
+      //   }
+      // }
+
+      return result;
     },
 
     async deletePizza(root, { id }) {
@@ -97,8 +101,37 @@ const pizzaResolver = {
       await db.none(query2, id);
       await db.none(query, id);
       return await db.any("SELECT * FROM ingredient ORDER BY id DESC");
+    },
+    async createPizzaIngredient(root, { idPizza, nameIngredient }) {
+      const query = `INSERT INTO pizza_ingredients (pizza_id, ingredient_id) 
+                      VALUES($1,$2);`;
+      const query2 = `SELECT id FROM ingredient WHERE name = $1;`;
+      const query3 = `SELECT * FROM pizza_ingredients WHERE 
+                      pizza_id = $1 and ingredient_id = $2;`;
+      const query4 = `SELECT i.id , i.name, i.calories FROM 
+      pizza_ingredients pi inner join ingredient i
+      on pi.ingredient_id = i.id where pi.pizza_id = $1 order by i.id ;`;
+      const { id } = await db.one(query2, nameIngredient);
+      const findRecord = await db.oneOrNone(query3, [idPizza, id]);
+
+      if (!findRecord) {
+        await db.none(query, [idPizza, id]);
+        return await db.any(query4, idPizza);
+      } else {
+        return await db.any(query4, idPizza);
+      }
+
+    },
+    async deletePizzaIngredient(root, { idPizza, idIngredient }) {
+      const query = `DELETE FROM pizza_ingredients WHERE pizza_id = $1 AND ingredient_id = $2;`;
+      const query2 = `SELECT i.id , i.name, i.calories FROM 
+      pizza_ingredients pi inner join ingredient i
+      on pi.ingredient_id = i.id where pi.pizza_id = $1 order by i.id ;`;
+      await db.none(query, [idPizza, idIngredient]);
+      return await db.any(query2, idPizza);
     }
   },
+
 };
 
 export default pizzaResolver;

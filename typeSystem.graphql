@@ -3,6 +3,7 @@
 type Query {
   pizzas(id: Int): [Pizza]
   ingredients(id: Int): [Ingredient]
+  pizzaIngredients(id: Int):[Ingredient]
 }
 
 #This is my types:
@@ -21,12 +22,15 @@ type Ingredient {
 
 type Mutation {
   createPizza(pizza: PizzaInput): [Pizza]
-  updatePizza(idLast: Int, pizzaU: PizzaInput): [Pizza]
+  updatePizza(idLast: Int, pizzaU: PizzaInput): Pizza
   deletePizza(id: Int): [Pizza]
 
   createIngredient(ingredient: IngredientInput):[Ingredient]
   updateIngredient(idLast: Int, ingredientU: IngredientInput): [Ingredient]
   deleteIngredient(id: Int): [Ingredient]
+
+  createPizzaIngredient(idPizza: Int!, nameIngredient: String!):[Ingredient]
+  deletePizzaIngredient(idPizza: Int!, idIngredient: Int!):[Ingredient]
 }
 
 input PizzaInput {
@@ -39,8 +43,6 @@ input IngredientInput{
   name: String!
   calories: String
 }
-
-
 
 input PizzaInputUpdated {
   idLast: Int!
