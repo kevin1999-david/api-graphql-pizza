@@ -27,7 +27,7 @@ const pizzaResolver = {
     },
     Pizza: {
         ingredients(pizza) {
-            console.log("Entre al método de ingredients");
+
             console.log(pizza);
             return db.any(
                 `SELECT ingredient.* FROM pizza_ingredients,
